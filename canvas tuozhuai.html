@@ -1,0 +1,90 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta http-equiv="content-type" charset="utf-8" />
+    <meta http-equiv="content-type" content="text/html" />
+    <title>demo</title>
+    <style type="text/css">
+       canvas{
+        background:#eee;
+       }
+    </style>
+    <script>
+    
+     window.onload=function(){
+      var canvas=document.getElementById("canvas");
+      var cobj=canvas.getContext("2d");
+  for(var i=0;i<3;i++){
+        cobj.beginPath();
+        cobj.fillStyle="black";
+       cobj.arc(50*(i+1),50*(i+1),15*(i+1),0,2*Math.PI);
+        cobj.fill();
+   }
+
+   var arr=[];
+   for(var j=0;j<3;j++){
+        var objj={
+            xx:50*(j+1),
+            yy:50*(j+1),
+            r:15*(j+1)
+        }
+        arr.push(objj);
+   }
+   canvas.onmousedown=function(e){
+        var eex=e.clientX;
+            var eey=e.clientY;
+        canvas.onmousemove=function(e){
+            var eex=e.clientX;
+            var eey=e.clientY;
+             cobj.clearRect(0,0,1000,1000);
+            for(var w=0;w<3;w++){
+                var pp=new Newdraw(arr[w],function(){
+                    cobj.beginPath();
+                arr[w].xx=eex;
+                arr[w].yy=eey;
+            cobj.arc(this.xx, this.yy,this.r,0,2*Math.PI);
+            cobj.fill();
+                });
+                 pp.draw();
+                pp.add(eex,eey);
+               
+            }
+        canvas.onmouseup=function(){
+             canvas.onmousemove=null;
+              canvas.onmouseup=null;
+        }
+        }
+
+
+   }
+   function Newdraw(obj,callback){
+        this.xx=obj.xx;
+        this.yy=obj.yy;
+        this.r=obj.r;
+        this.callback=callback;
+        this.draw();
+
+   }
+   Newdraw.prototype={
+        draw:function(){
+            //alert("")
+            cobj.beginPath();
+            cobj.arc(this.xx, this.yy,this.r,0,2*Math.PI);
+            cobj.fill();
+        },
+        add:function(ex,ey){
+            if(cobj.isPointInPath(ex,ey)){
+                this.callback();
+                
+            }
+        }
+   }
+   }
+    </script>
+</head>
+
+
+<body>
+   <canvas width="1500px" height="1500px" id="canvas"></canvas>
+</body>
+</html>
