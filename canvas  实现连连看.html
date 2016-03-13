@@ -1,0 +1,109 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta http-equiv="content-type" charset="utf-8" />
+    <meta http-equiv="content-type" content="text/html" />
+    <title>demo</title>
+    <style type="text/css">
+       canvas{
+        background:#eee;
+       }
+    </style>
+    <script>
+    
+     window.onload=function(){
+      var canvas=document.getElementById("canvas");
+      var cobj=canvas.getContext("2d");
+      //创建种子文件
+   var arr=[];
+   var newarr=[];
+   
+   for(var i=0;i<8;i++){
+        var obj={
+            wd:40,
+            ht:40,
+            colorr:"rgba("+parseInt(255*Math.random())+","+parseInt(255*Math.random())+","+parseInt(255*Math.random())+","+255+")",
+            xx:0,
+            yy:0
+       }
+       arr.push(obj);
+   }
+   //拼凑出十六个
+   for(var j=0;j<2;j++){
+        for(var w=0;w<8;w++){
+            var newobj={};
+            for(var item in arr[w]){    //容易出错：如果数组中存储的是非引用变量，则直接arr[i]=brr[i]这种类型的复制,或者arr.push（brr）进行直接的操作。但是如果数组的内部还是引用类型的话，则需要再对里面进行深度遍历
+                newobj[item]=arr[w][item];
+            }
+            newarr.push(newobj);
+        }
+    
+   }
+   
+   // 在canvas中画出，并且对每个方块位置赋值
+  for(var hang=0;hang<4;hang++){
+    for(var lei=0;lei<4;lei++){
+        cobj.beginPath();
+        cobj.fillStyle=newarr[hang*4+lei].colorr;
+        newarr[hang*4+lei].xx=lei*(5+40);   //对每个方块的位置赋值
+        newarr[hang*4+lei].yy=hang*(5+40);
+        cobj.rect(lei*(5+40),hang*(5+40),40,40);
+        cobj.fill();
+    }
+  }
+  var crr=[];
+  var irr=[];
+  //实现拖拽效果
+  canvas.onclick=function(e){
+    var ex=e.clientX;
+    var ey=e.clientY;
+    cobj.clearRect(0,0,1000,1000)
+     redraw(ex,ey);
+    if(crr.length==2){   //如果点击了两下
+       if(irr[0]!=irr[1]) {   //如果不是点击同一个
+        if(newarr[irr[1]].colorr==newarr[irr[0]].colorr){
+             newarr[irr[0]].colorr="rgba("+parseInt(255*Math.random())+","+parseInt(255*Math.random())+","+parseInt(255*Math.random())+","+0+")";  //对他们的颜色改为透明
+            newarr[irr[1]].colorr="rgba("+parseInt(255*Math.random())+","+parseInt(255*Math.random())+","+parseInt(255*Math.random())+","+0+")";
+             crr=[];   //存储这两个点击对象数组置空，用于判断是不是有两个
+             irr=[];   //存储这两个点击对象下标数组置空，用于判断是不是同一个
+             cobj.clearRect(0,0,1000,1000)   //点击两个一样的之后重绘
+             for(var q=0;q<16;q++){    //改变颜色之后立刻进行重绘
+             cobj.beginPath();
+             cobj.fillStyle=newarr[q].colorr;
+             cobj.rect(newarr[q].xx,newarr[q].yy,40,40);
+             cobj.fill();
+        }
+       }else{          //如果这两个方块的颜色不一样，则保留最后一个方块信息
+        irr[0]=irr[1];
+        crr[0]=crr[1];
+        irr.length=1;
+        crr.length=1;
+        return;
+       }
+    }
+    
+}
+  }
+    function redraw(ex,ey){
+      for(var q=0;q<16;q++){
+         cobj.beginPath();
+         cobj.fillStyle=newarr[q].colorr;
+         cobj.rect(newarr[q].xx,newarr[q].yy,40,40);
+         cobj.fill();
+         if(cobj.isPointInPath(ex,ey)){//如果点击了这个对象就将这个对象保存下来
+            crr.push(newarr[q]);
+            irr.push(q);
+         }
+         
+          
+      }  
+    }
+}
+    </script>
+</head>
+
+
+<body>
+   <canvas width="1500px" height="1500px" id="canvas"></canvas>
+   </body>
+</html>
